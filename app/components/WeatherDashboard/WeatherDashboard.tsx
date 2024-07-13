@@ -35,16 +35,13 @@ interface Weathertypes {
 const WeatherDashboard: FC<WeatherDashboardProps> = () => {
   const [city, setCity] = useState<string>("");
   const [weatherData, setWeatherData] = useState<Weathertypes | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [cityList, setCityList] = useState<CityListType[]>([]);
   const inRef = useRef<any>(null);
 
   const handleSearch = async (record: CityListType) => {
     try {
-      setLoading(true);
       let res = await fetchWeatherData(record.latitude, record.longitude);
       if (res && res.status === "success" && res.data.hourly) {
-        // console.log("🚀 ~ handleSearch ~ res.data.hourly:",  Object.values(res.data.hourly.temperature))
         setWeatherData({
           time: res.data.hourly.time.slice(0, 24),
           temperature: Object.values(res.data.hourly.temperature),
@@ -64,30 +61,17 @@ const WeatherDashboard: FC<WeatherDashboardProps> = () => {
   };
 
   const handleKeyUp = (e: any) => {
-    if (loading) {
-      return;
-    }
     setCity(e.target.value);
-    setLoading(true);
-    fetchCities(e.target.value)
-      .then((res) => {
-        res.results && setCityList(res.results.slice(0, 5));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchCities(e.target.value).then((res) => {
+      res && res.results && setCityList(res.results.slice(0, 5));
+    });
   };
 
   const restAll = () => {
     setCity("");
     setCityList([]);
-    setLoading(false);
     setWeatherData(null);
   };
-
-  useEffect(() => {
-    !loading && inRef.current.focus();
-  }, [loading]);
 
   return (
     <WeatherDashboardWrapper className="container mt-4">
@@ -108,7 +92,11 @@ const WeatherDashboard: FC<WeatherDashboardProps> = () => {
             </button>
           </div>
           {cityList.map((item, i) => (
-            <div className="card" key={i} onClick={() => handleSearch(item)}>
+            <div
+              className="card city-card"
+              key={i}
+              onClick={() => handleSearch(item)}
+            >
               <div className="card-body">
                 <p className="card-text">
                   {`${item.admin2 ? item.admin2 + ", " : ""}${item.admin1}, ${
@@ -119,19 +107,6 @@ const WeatherDashboard: FC<WeatherDashboardProps> = () => {
             </div>
           ))}
           {weatherData && <TemperatureChart data={weatherData} />}
-          {/* {weatherData && (
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">{weatherData.name}</h5>
-                <p className="card-text">
-                  Temperature: {weatherData.main.temp} °C
-                </p>
-                <p className="card-text">
-                  Description: {weatherData.weather[0].description}
-                </p>
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
     </WeatherDashboardWrapper>

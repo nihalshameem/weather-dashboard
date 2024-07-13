@@ -1,5 +1,5 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React from "react";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,9 +10,10 @@ import {
   Tooltip,
   Legend,
   TimeScale,
-} from 'chart.js';
-import 'chartjs-adapter-date-fns';
-import { ChartOptions } from 'chart.js';
+} from "chart.js";
+import "chartjs-adapter-date-fns";
+import { ChartOptions } from "chart.js";
+import { TemperatureChartWrapper } from "./TemperatureChart.styled";
 
 ChartJS.register(
   CategoryScale,
@@ -39,47 +40,51 @@ const TemperatureChart: React.FC<TemperatureChartProps> = ({ data }) => {
     labels: data.time,
     datasets: [
       {
-        label: 'Temperature',
+        label: "Temperature",
         data: data.temperature,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      //   fill: true,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        //   fill: true,
       },
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: 'Temperature Over Time',
+        text: "Temperature Over Time",
       },
     },
     scales: {
       x: {
-        type: 'time',
+        type: "time",
         time: {
-          unit: 'day',
+          unit: "day",
         },
         title: {
           display: true,
-          text: 'Time',
+          text: "Time",
         },
       },
       y: {
         title: {
           display: true,
-          text: 'Temperature (°C)',
+          text: "Temperature (°C)",
         },
       },
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return (
+    <TemperatureChartWrapper>
+      <Line data={chartData} options={options} />
+    </TemperatureChartWrapper>
+  );
 };
 
 export default TemperatureChart;
